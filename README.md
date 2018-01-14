@@ -1,4 +1,4 @@
-# Couchbase Importer #
+# HTTP Importer #
 
 Example Akka HTTP service for uploading [Protein XML](http://aiweb.cs.washington.edu/research/projects/xmltk/xmldata/data/pir/psd7003.xml).
 Supports Jenkins Blue Ocean for building with Jenkinsfile.

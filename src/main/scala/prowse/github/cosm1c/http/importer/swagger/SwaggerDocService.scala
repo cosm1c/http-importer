@@ -2,13 +2,17 @@ package prowse.github.cosm1c.http.importer.swagger
 
 import com.github.swagger.akka._
 import com.github.swagger.akka.model.Info
+import prowse.github.cosm1c.http.importer.job.JobRestService
 import prowse.github.cosm1c.http.importer.rest.ImporterRestService
 
 class SwaggerDocService(override val basePath: String) extends SwaggerHttpService {
-    override val apiClasses = Set(classOf[ImporterRestService])
+    override val apiClasses = Set(
+        classOf[JobRestService],
+        classOf[ImporterRestService]
+    )
     //override val host = "localhost:12345"
     override val info = Info(
-        title = "couchbase-importer",
+        title = "http-importer",
         //version = "",
         description = "An example of importing a large XML file into Couchbase."
         //contact: Option[Contact] = None,

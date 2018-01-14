@@ -9,12 +9,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
-import prowse.github.cosm1c.http.importer.rest.ImporterRestService
+import prowse.github.cosm1c.http.importer.job.{JobManagerActor, JobRestService}
+import prowse.github.cosm1c.http.importer.rest.{ImporterRestService, RestJsonProtocol}
 import prowse.github.cosm1c.http.importer.swagger.SwaggerDocService
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
-class AppSupervisorActor extends Actor with ActorLogging {
+class AppSupervisorActor extends Actor with ActorLogging with RestJsonProtocol {
 
     private implicit val actorSystem: ActorSystem = context.system
     private implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -23,6 +24,8 @@ class AppSupervisorActor extends Actor with ActorLogging {
 
     private val config = ConfigFactory.load()
     private val httpPort = config.getInt("app.httpPort")
+
+    private val jobManagerActor = context.actorOf(JobManagerActor.props, "JobManagerActor")
 
     private val route: Route =
         decodeRequest {
@@ -34,6 +37,7 @@ class AppSupervisorActor extends Actor with ActorLogging {
                     pathEndOrSingleSlash {
                         getFromResource("index.html")
                     } ~
+                        new JobRestService(jobManagerActor).route ~
                         new ImporterRestService().route ~
                         new SwaggerDocService("/").routes
                 }

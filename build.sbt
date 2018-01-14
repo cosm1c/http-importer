@@ -4,6 +4,7 @@ import scala.language.postfixOps
 
 val akkaVersion = "2.5.8"
 val akkaHttpVersion = "10.0.11"
+val circeVersion = "0.9.0"
 
 lazy val root = (project in file("."))
   .enablePlugins(BuildInfoPlugin)
@@ -22,9 +23,14 @@ lazy val root = (project in file("."))
       "com.typesafe.akka" %% "akka-stream" % akkaVersion,
       "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-slf4j" % akkaVersion,
       "com.github.swagger-akka-http" %% "swagger-akka-http" % "0.11.0",
+
+      "de.heikoseeberger" %% "akka-http-circe" % "1.19.0",
+      "io.circe" %% "circe-core" % circeVersion,
+      "io.circe" %% "circe-generic" % circeVersion,
+      "io.circe" %% "circe-parser" % circeVersion,
+      "io.circe" % "circe-java8_2.12" % circeVersion,
 
       "com.lightbend.akka" %% "akka-stream-alpakka-xml" % "0.15.1",
       "javax.xml.bind" % "jaxb-api" % "2.3.0",

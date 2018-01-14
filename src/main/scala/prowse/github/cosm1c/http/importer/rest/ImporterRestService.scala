@@ -9,8 +9,8 @@ import io.swagger.annotations._
 import prowse.github.cosm1c.http.importer.importer.XmlImporter
 
 @Api(produces = "application/json")
-@Path("/")
-class ImporterRestService()(implicit val log: LoggingAdapter, mat: Materializer) extends Directives {
+@Path("import")
+class ImporterRestService()(implicit log: LoggingAdapter, mat: Materializer) extends Directives {
 
     val route: Route =
         pathPrefix("import") {
