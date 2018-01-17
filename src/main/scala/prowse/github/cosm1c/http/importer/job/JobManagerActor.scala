@@ -30,9 +30,11 @@ object JobManagerActor {
 
     final case class GetJobInfo(jobId: Long)
 
+    final case class JobStreamMessage(curr: Int)
+
     final case class KillJob(jobId: Long)
 
-    final case class SubscribeJob(jobId: Long, sink: Sink[Int, _])
+    final case class SubscribeJob(jobId: Long, sink: Sink[JobStreamMessage, _])
 
     // Example Job Config
     final case class CreateJob(description: String,
@@ -42,7 +44,7 @@ object JobManagerActor {
                                           endDateTime: LocalDateTime,
                                           error: Option[String] = None)
 
-    private final case class JobUpdate(jobId: Long, curr: Int)
+    private final case class JobMessage(jobId: Long, jobStreamMessage: JobStreamMessage)
 
 }
 
@@ -51,7 +53,7 @@ class JobManagerActor()(implicit mat: Materializer) extends Actor with ActorLogg
 
     private var jobCounter: Long = 0L
     private var jobInfos = Map.empty[Long, JobInfo]
-    private var jobStreams = Map.empty[Long, Source[Int, NotUsed]]
+    private var jobStreams = Map.empty[Long, Source[JobStreamMessage, NotUsed]]
     private var jobKillSwitches = Map.empty[Long, UniqueKillSwitch]
 
     override def receive: Receive = {
@@ -86,6 +88,7 @@ class JobManagerActor()(implicit mat: Materializer) extends Actor with ActorLogg
             val jobId = jobCounter
             // Example only
             val jobStream = Source(1 to total)
+                .map(JobStreamMessage)
                 .throttle(1, 100.milliseconds, 1, ThrottleMode.shaping)
                 .buffer(1, OverflowStrategy.dropHead)
             val (killSwitch, hubSource) = jobStream
@@ -93,8 +96,8 @@ class JobManagerActor()(implicit mat: Materializer) extends Actor with ActorLogg
                 .toMat(BroadcastHub.sink)(Keep.both)
                 .run()
             hubSource
-                .runWith(Sink.foreach { curr =>
-                    self ! JobUpdate(jobId, curr)
+                .runWith(Sink.foreach { jobStreamMessage =>
+                    self ! JobMessage(jobId, jobStreamMessage)
                 })
                 .onComplete {
                     case Success(_) =>
@@ -118,10 +121,10 @@ class JobManagerActor()(implicit mat: Materializer) extends Actor with ActorLogg
             jobStreams -= jobId
             jobKillSwitches -= jobId
 
-        case JobUpdate(jobId, curr) =>
+        case JobMessage(jobId, jobStreamMessage) =>
             jobInfos.get(jobId)
                 .foreach(jobInfo =>
-                    jobInfos += jobId -> jobInfo.copy(curr = Some(curr)))
+                    jobInfos += jobId -> jobInfo.copy(curr = Some(jobStreamMessage.curr)))
 
     }
 

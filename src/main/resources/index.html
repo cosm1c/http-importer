@@ -6,13 +6,82 @@
 	<title>Couchbase Importer</title>
 	<meta name="description" content="Example Couchbase importer">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+	<style>
+		//className
+	</style>
 </head>
 <body>
 
-<h1>Couchbase Importer</h1>
-<p>Example Couchbase importer.</p>
+<div id="app"></div>
 
 <p><a href="/api-docs/swagger.json">/api-docs/swagger.json</a></p>
 
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+<!--
+<script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+-->
+<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.32.0/react-bootstrap.min.js"></script>
+<script type="text/babel">
+	"use strict";
+
+	function JobList(props) {
+		const {jobInfos} = props;
+		return (
+			<ReactBootstrap.ListGroup>
+				{jobInfos.map((jobInfo) =>
+					<ReactBootstrap.ListGroupItem
+						key={jobInfo.jobId}
+						header={jobInfo.jobId + ' - ' + jobInfo.description}>
+						Extra info
+						<ReactBootstrap.ProgressBar
+							label={jobInfo.jobId * 10 + '%'}
+							active={jobInfo.jobId < 10}
+							now={jobInfo.jobId * 10}/>
+					</ReactBootstrap.ListGroupItem>
+				)}
+			</ReactBootstrap.ListGroup>
+		);
+	}
+
+	const jobInfos = [...Array(15).keys()]
+		.map((i => ({
+			jobId: i,
+			description: `Job descript ${i}`
+		})));
+
+	ReactDOM.render(
+		<ReactBootstrap.Grid>
+
+			<ReactBootstrap.Row>
+				<ReactBootstrap.Col>
+					<ReactBootstrap.Navbar>
+						<ReactBootstrap.Navbar.Header>
+							<ReactBootstrap.Navbar.Brand>Job Runner</ReactBootstrap.Navbar.Brand>
+						</ReactBootstrap.Navbar.Header>
+						<ReactBootstrap.Nav pullRight={true}>
+							<ReactBootstrap.NavItem eventKey={1} href='api-docs/swagger.json'
+													target='_blank'>api-docs/swagger.json</ReactBootstrap.NavItem>
+						</ReactBootstrap.Nav>
+					</ReactBootstrap.Navbar>
+				</ReactBootstrap.Col>
+			</ReactBootstrap.Row>
+
+			<ReactBootstrap.Row>
+				<ReactBootstrap.Col>
+					<JobList jobInfos={jobInfos}/>
+				</ReactBootstrap.Col>
+			</ReactBootstrap.Row>
+
+		</ReactBootstrap.Grid>,
+		document.querySelector('#app')
+	);
+
+</script>
 </body>
 </html>
