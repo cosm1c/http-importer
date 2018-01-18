@@ -8,14 +8,32 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
 	<style>
-		//className
+		html, body, #app {
+			width: 100%;
+			height: 100vh;
+		}
+
+		#app .navbar {
+			margin: 0;
+		}
+
+		.main-container {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.navbar-row {
+		}
+
+		.joblist-row {
+			flex-grow: 1;
+			overflow: auto;
+		}
 	</style>
 </head>
 <body>
 
 <div id="app"></div>
-
-<p><a href="/api-docs/swagger.json">/api-docs/swagger.json</a></p>
 
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
@@ -31,9 +49,9 @@
 	"use strict";
 
 	function JobList(props) {
-		const {jobInfos} = props;
+		const {jobInfos, className} = props;
 		return (
-			<ReactBootstrap.ListGroup>
+			<ReactBootstrap.ListGroup className={className}>
 				{jobInfos.map((jobInfo) =>
 					<ReactBootstrap.ListGroupItem
 						key={jobInfo.jobId}
@@ -56,29 +74,21 @@
 		})));
 
 	ReactDOM.render(
-		<ReactBootstrap.Grid>
+		<main className="main-container">
 
-			<ReactBootstrap.Row>
-				<ReactBootstrap.Col>
-					<ReactBootstrap.Navbar>
-						<ReactBootstrap.Navbar.Header>
-							<ReactBootstrap.Navbar.Brand>Job Runner</ReactBootstrap.Navbar.Brand>
-						</ReactBootstrap.Navbar.Header>
-						<ReactBootstrap.Nav pullRight={true}>
-							<ReactBootstrap.NavItem eventKey={1} href='api-docs/swagger.json'
-													target='_blank'>api-docs/swagger.json</ReactBootstrap.NavItem>
-						</ReactBootstrap.Nav>
-					</ReactBootstrap.Navbar>
-				</ReactBootstrap.Col>
-			</ReactBootstrap.Row>
+			<ReactBootstrap.Navbar className="navbar-row">
+				<ReactBootstrap.Navbar.Header>
+					<ReactBootstrap.Navbar.Brand>Job Runner</ReactBootstrap.Navbar.Brand>
+				</ReactBootstrap.Navbar.Header>
+				<ReactBootstrap.Nav pullRight={true}>
+					<ReactBootstrap.NavItem eventKey={1} href='api-docs/swagger.json'
+											target='_blank'>api-docs/swagger.json</ReactBootstrap.NavItem>
+				</ReactBootstrap.Nav>
+			</ReactBootstrap.Navbar>
 
-			<ReactBootstrap.Row>
-				<ReactBootstrap.Col>
-					<JobList jobInfos={jobInfos}/>
-				</ReactBootstrap.Col>
-			</ReactBootstrap.Row>
+			<JobList className="joblist-row" jobInfos={jobInfos}/>
 
-		</ReactBootstrap.Grid>,
+		</main>,
 		document.querySelector('#app')
 	);
 
